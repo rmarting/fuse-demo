@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/cxf
+       http://camel.apache.org/schema/cxf/camel-cxf-spring.xsd
+       http://camel.apache.org/schema/spring
+       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    
+    <!-- CXF Endpoints -->
+    <cxf:cxfEndpoint id="customerWebService" address="/ws/customerService/" serviceClass="com.redhat.fuse.demo.service.ws.CustomerWS" loggingFeatureEnabled="true">
+    </cxf:cxfEndpoint>
+    
+    <!-- CXF Beans -->
+    <bean id="customerWSImpl" class="com.redhat.fuse.demo.service.ws.CustomerWSImpl"/>
+    
+    <!-- Camel Context -->
+    <camelContext trace="false" xmlns="http://camel.apache.org/schema/spring">
+        <propertyPlaceholder id="properties" location="fabric8/route.properties"/>
+		
+		<!-- Exposing WS Service -->
+		<route id="cxf">
+			<from uri="cxf:bean:customerWebService" />
+			<bean ref="customerWSImpl" method="updateAccount"/>
+			<log message="Response generated in CXF-WS:\n${body}"/>
+			<to uri="log:output" />
+		</route>
+	</camelContext>
+</beans>

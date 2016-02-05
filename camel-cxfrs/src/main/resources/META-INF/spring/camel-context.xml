@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/cxf
+       http://camel.apache.org/schema/cxf/camel-cxf-spring.xsd
+       http://camel.apache.org/schema/spring
+       http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <!-- JSON Providers -->
+<!--     <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/> -->
+    <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+    
+    <!-- CXF Endpoints -->
+    <cxf:rsServer id="customerRestService" address="/rs" 
+    	serviceClass="com.redhat.fuse.demo.service.rs.CustomerRest"
+    	loggingFeatureEnabled="true">
+	    <cxf:providers>
+	       	<ref bean="jsonProvider"/>
+	    </cxf:providers>
+    </cxf:rsServer>
+    
+    <!-- CXF Beans -->
+    <bean id="customerRSImpl" class="com.redhat.fuse.demo.service.rs.CustomerRestImpl"/>
+    
+    <!-- Camel Context -->
+    <camelContext trace="false" xmlns="http://camel.apache.org/schema/spring">
+        <propertyPlaceholder id="properties" location="fabric8/route.properties"/>
+				
+		<!-- Exposing REST Service -->
+		<route id="rs">
+			<from uri="cxfrs:bean:customerRestService" />
+			<bean ref="customerRSImpl" method="enrich"/>
+			<log message="Response generated in CXF-RS:\n${body}"/>
+			<to uri="log:output" />
+		</route>		
+	</camelContext>
+</beans>

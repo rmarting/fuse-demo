@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/cxf
+       http://camel.apache.org/schema/cxf/camel-cxf-spring.xsd
+       http://camel.apache.org/schema/spring
+       http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <!-- H2 Datasource -->
+<!--     <bean id="usecaseDB" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> -->
+<!--         <property name="driverClassName" value="org.h2.Driver"/> -->
+<!--         <property name="url" value="jdbc:h2:tcp://localhost/~/usecaseDB"/> -->
+<!--         <property name="username" value="sa"/> -->
+<!--         <property name="password" value=""/> -->
+<!--     </bean> -->
+
+    <!-- SQL Component -->
+<!--     <bean id="sql" class="org.apache.camel.component.sql.SqlComponent"> -->
+<!-- 		 <property name="dataSource" ref="usecaseDB"/> -->
+<!--     </bean> -->
+    
+    <!-- Agregator Strategies -->
+    <bean id="accountAggregator" class="com.redhat.fuse.demo.bean.AccountAggregator"/>
+
+    <!-- JSON Providers -->
+    <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+    
+    <!-- CXF Endpoints -->
+    <cxf:cxfEndpoint id="customerWebService" address="http://rhel7jboss02:8182/cxf/ws/customerService/" serviceClass="com.redhat.fuse.demo.service.ws.CustomerWS" loggingFeatureEnabled="true">
+    </cxf:cxfEndpoint>
+    
+    <!-- CXF Clients -->
+    <cxf:rsClient id="customerRestServiceClient" address="http://rhel7jboss02:8184/cxf/rs" serviceClass="com.redhat.fuse.demo.service.rs.CustomerRest"
+        loggingFeatureEnabled="true" skipFaultLogging="true">
+    		<cxf:headers>    		  
+            	<entry key="Accept" value="application/json" />
+            	<entry key="Content-Type" value="application/json" />
+        	</cxf:headers>
+		    <cxf:providers>
+		       	<ref bean="jsonProvider"/>
+		    </cxf:providers>
+    </cxf:rsClient>
+        
+    <!-- Processor Bean -->
+    <bean id="processorBean" class="com.redhat.fuse.demo.bean.ProcessorBean"/>
+
+	<!-- AMQ -->
+	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+		<property name="brokerURL" value="discovery:(fabric:demo)" /> <!-- discovery:(fabric:demo) --><!-- vm://localhost -->
+		<property name="userName" value="admin" />
+		<property name="password" value="admin" />
+	</bean>
+    
+    <!-- Camel Context -->
+    <camelContext trace="false" xmlns="http://camel.apache.org/schema/spring">
+        <propertyPlaceholder id="properties" location="fabric8/route.properties"/>
+        
+        <!-- Use Case 1 -->
+		<endpoint
+			uri="dozer:csv2json?sourceModel=org.acme.Customer&amp;targetModel=org.globex.Account&amp;marshalId=transform-json&amp;mappingFile=transformation.xml"
+			id="csv2json" />
+		
+		<dataFormats>
+			<bindy type="Csv" classType="org.acme.Customer" id="bindyDataformat" />
+			
+			<json id="transform-json" library="Jackson" />
+			<json id="json2Account" library="Jackson" unmarshalTypeName="org.globex.Account"/>
+		</dataFormats>
+
+		<route id="loadCSV" autoStartup="true">
+			<from uri="file:{{fileInput}}?fileName=customers.csv&amp;noop=true" />
+
+			<onException>
+				<exception>java.lang.IllegalArgumentException</exception>
+				<handled>
+					<constant>true</constant>
+				</handled>
+				<convertBodyTo type="String"/>
+				<to uri="activemq:queue:demo-error" />
+				<to uri="file:{{fileError}}?fileName=account-${property.CamelSplitIndex}.json" />
+			</onException>
+
+			<log message="Loaded file ${header.CamelFileName}" />
+			
+			<split streaming="true">
+				<tokenize token="\n"></tokenize>
+				<log message="Record Row: ${body}" />
+				<unmarshal ref="bindyDataformat" />
+				<log message="Customer: ${body}" />
+				<to ref="csv2json" />
+				<log message="Account: ${body}" />
+				<to uri="file:{{fileOutput}}?fileName=account-${property.CamelSplitIndex}.json" />
+			</split>
+		</route>
+		<!-- Ends Use Case 1 -->
+
+		<route id="loadMessage" autoStartup="true">
+			<from uri="activemq:queue:demo-input" />
+
+			<onException>
+				<exception>java.lang.IllegalArgumentException</exception>
+				<handled>
+					<constant>true</constant>
+				</handled>
+				<convertBodyTo type="String"/>
+				<to uri="activemq:queue:demo-error" />
+			</onException>
+
+			<log message="Loaded message ${body}" />
+			<unmarshal ref="bindyDataformat" />
+			<log message="Customer from Queue: ${body}" />
+			<to ref="csv2json" />
+			<log message="Account from Queue: ${body}" />
+			<to uri="file:{{fileOutput}}?fileName=account-account-message.json" />
+		</route>
+		
+		<!-- Use Case 2 -->
+		<route id="loadAccount" autoStartup="true">
+			<from uri="file:{{fileOutput}}?noop=false" />
+			<log message="Loading Account file ${header.CamelFileName}"/>
+			<unmarshal ref="json2Account"/>
+			<multicast strategyRef="accountAggregator" parallelProcessing="false">
+			    <to uri="direct:rs" />
+			    <to uri="direct:ws" />
+			</multicast>
+			<log message="Aggregated data from External Services:\n${body}"/>
+			<!-- TODO Migrate to PostgreSQL -->
+			<!-- to uri="direct:insertDB" / -->
+			<wireTap uri="direct:sendMessage"/>
+		</route>
+		
+		<!-- Routes to Call Services -->	
+		<route id="callRS">
+		    <from uri="direct:rs"/>
+		    
+		    <onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1" redeliveryDelay="0"/>
+				<handled>
+					<constant>true</constant>
+				</handled>
+				<log message="Error in callRS service.\nMessage: ${exception.message}\nStack Trace:\n${exception.stacktrace}" />
+			</onException>		 
+		    
+		    <log message="Invoking REST Service (Account):\n${body}" />
+		    <bean ref="processorBean" method="convertAccountToString" />
+		    
+		    <!-- Preparing Http Headers -->
+		    <setHeader headerName="CamelCxfRsUsingHttpAPI">
+         		<constant>true</constant>        
+       		</setHeader>
+		    <setHeader headerName="CamelHttpMethod">
+         		<constant>POST</constant>        
+       		</setHeader>
+		    <setHeader headerName="Content-Type">
+         		<constant>application/json</constant>
+       		</setHeader>
+		    <setHeader headerName="CamelHttpPath">
+         		<constant>/customerservice/enrich</constant>        
+       		</setHeader>
+		    <setHeader headerName="originalBody">
+         		<constant>${body}</constant>        
+       		</setHeader>
+		    
+		    <!-- Calling RS Service -->
+       		<log message="Invoking RS Service"/>
+   		    <inOut uri="cxfrs:bean:customerRestServiceClient"/>
+   		    
+   		    <!-- Procesing Response -->
+   		    <bean ref="processorBean" method="manageRESTResponse" />
+   		    <log message="Response from customerRestServiceClient:\n${body}"/>
+   		</route>
+
+		<route id="callWS">
+		    <from uri="direct:ws"/>
+		    
+		    <onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1" redeliveryDelay="0"/>
+				<handled>
+					<constant>true</constant>
+				</handled>
+				<log message="Error in callWS service.\nMessage: ${exception.message}\nStack Trace:\n${exception.stacktrace}" />
+			</onException>		    
+		    
+		    <inOut uri="cxf:bean:customerWebService" />
+		    
+		    <!-- Procesing Response -->
+		    <!-- 
+   		    <bean ref="processorBean" method="manageSOAPResponse"/>
+		    -->
+		    <transform>
+                <simple>${in.body[0]}</simple>
+            </transform>
+		    <log message="Response from customerWebService:\n${body}"/>    
+		</route>
+		
+		<!-- SQL Routes -->
+<!-- 		<route id="insertDB"> -->
+<!-- 			<from uri="direct:insertDB" /> -->
+<!-- 			<log message="Inserting into data into H2-DB:\n${body}"/> -->
+<!-- 			<transform> -->
+<!-- 				<method ref="processorBean" method="defineNamedParameters" /> -->
+<!-- 			</transform> -->
+<!-- 			<to uri="sql:{{sql.insertNewAccount}}"/>			 -->
+<!-- 		</route> -->
+
+		<!-- AMQ Routes -->
+		<route id="sendMessage">
+			<from uri="direct:sendMessage" />
+			<log message="Sending message to queue:\n${body}"/>
+			<convertBodyTo type="String"/>
+			<to uri="activemq:queue:demo"/>			
+		</route>
+	</camelContext>
+</beans>
