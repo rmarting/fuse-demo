@@ -31,7 +31,7 @@
     
     <!-- CXF Endpoints -->
     <!-- /servlets/org.apache.cxf.cxf-rt-transports-http/cxf/  -->
-    <cxf:cxfEndpoint id="customerWebService" address="http://rhel7jboss02:8181/cxf/customerService/" serviceClass="com.redhat.fuse.demo.service.ws.CustomerWS" loggingFeatureEnabled="true">
+    <cxf:cxfEndpoint id="customerWebService" address="http://rhel7jboss02:8185/cxf/customerService/" serviceClass="com.redhat.fuse.demo.service.ws.CustomerWS" loggingFeatureEnabled="true">
     </cxf:cxfEndpoint>
     
     <!-- CXF Clients -->
