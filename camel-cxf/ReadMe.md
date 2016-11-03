@@ -16,17 +16,6 @@ Aggregate the responses received and take care about the transformation XML/JSon
 		SOAP Web Service: http://localhost:9090/ws/customerService/?wsdl
 
 There is a SoapUI project in `src/test/resources/soapui/` to test this Web Service EndPoint.
-		
-		REST Service: (POST) http://localhost:9191/rs/customerservice/enrich
-
-To test this REST EndPoint you can execute the following curl command line:
-
-[source]
-curl \
-    -H "Accept: application/json" \
-    -H "Content-Type: application/json" \
-    -X POST -d '{"company":{"name":"MicroservicesVision","geo":"WA","active":true},"contact":{"firstName":"Fred","lastName":"Quicksand","streetAddr":"202 Barney Blvd.","city":"Rock City","state":"MI","zip":"19728","phone":"100-400-2000"},"clientId":0,"salesRepresentative":null}' \
-    http://localhost:9191/rs/customerservice/enrich
 
 === Other Resources
 Related Links about the topics included in this Use Case:

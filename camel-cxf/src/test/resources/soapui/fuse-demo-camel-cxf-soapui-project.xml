@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project activeEnvironment="Default" name="fuse-demo-camel-cxf" resourceRoot="" soapui-version="5.0.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="CustomerWSServiceSoapBinding" type="wsdl" bindingName="{http://ws.service.demo.fuse.redhat.com/}CustomerWSServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:9090/ws/customerService?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:9090/ws/customerService?wsdl"><con:part><con:url>http://localhost:9090/ws/customerService?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="CustomerWSService" targetNamespace="http://ws.service.demo.fuse.redhat.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.service.demo.fuse.redhat.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http">
+<con:soapui-project activeEnvironment="Default" name="fuse-demo-camel-cxf" resourceRoot="" soapui-version="5.0.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="CustomerWSServiceSoapBinding" type="wsdl" bindingName="{http://ws.service.demo.fuse.redhat.com/}CustomerWSServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:9090/customerService/?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:9090/customerService/?wsdl"><con:part><con:url>http://localhost:9090/customerService/?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="CustomerWSService" targetNamespace="http://ws.service.demo.fuse.redhat.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.service.demo.fuse.redhat.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http">
   <wsdl:types>
     <xs:schema elementFormDefault="unqualified" targetNamespace="http://ws.service.demo.fuse.redhat.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
       <xs:element name="CorporateAccount" type="tns:corporateAccount"/>
@@ -51,11 +51,11 @@
       </xs:complexType>
     </xs:schema>
   </wsdl:types>
-  <wsdl:message name="updateAccountResponse">
-    <wsdl:part element="tns:updateAccountResponse" name="parameters"></wsdl:part>
-  </wsdl:message>
   <wsdl:message name="updateAccount">
     <wsdl:part element="tns:updateAccount" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateAccountResponse">
+    <wsdl:part element="tns:updateAccountResponse" name="parameters"></wsdl:part>
   </wsdl:message>
   <wsdl:portType name="CustomerWS">
     <wsdl:operation name="updateAccount">
@@ -77,10 +77,10 @@
   </wsdl:binding>
   <wsdl:service name="CustomerWSService">
     <wsdl:port binding="tns:CustomerWSServiceSoapBinding" name="CustomerWSPort">
-      <soap:address location="http://localhost:9090/ws/customerService/"/>
+      <soap:address location="http://localhost:9090/customerService/"/>
     </wsdl:port>
   </wsdl:service>
-</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:9090/ws/customerService/</con:endpoint><con:endpoint>http://rhel7jboss01:8182/cxf/ws/customerService/</con:endpoint><con:endpoint>http://rhel7jboss02:8182/cxf/ws/customerService/</con:endpoint><con:endpoint>http://rhel7jboss02:9000/cxf/ws/customerService</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="updateAccount" bindingOperationName="updateAccount" type="Request-Response" outputName="updateAccountResponse" inputName="updateAccount" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request - Test"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://rhel7jboss02:8182/cxf/ws/customerService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.service.demo.fuse.redhat.com/">
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:9090/customerService/</con:endpoint><con:endpoint>http://rhel7jboss01:9000/cxf/customerService/</con:endpoint><con:endpoint>http://rhel7jboss01:9000/servlets/org.apache.cxf.cxf-rt-transports-http/cxf/customerService/</con:endpoint><con:endpoint>http://rhel7jboss02:8181/cxf/customerService/</con:endpoint><con:endpoint>http://rhel7jboss02:9000/servlets/org.apache.cxf.cxf-rt-transports-http/cxf/customerService/</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="updateAccount" bindingOperationName="updateAccount" type="Request-Response" outputName="updateAccountResponse" inputName="updateAccount" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request - Test"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://rhel7jboss02:9000/servlets/org.apache.cxf.cxf-rt-transports-http/cxf/customerService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.service.demo.fuse.redhat.com/">
    <soapenv:Header/>
    <soapenv:Body>
       <ws:updateAccount>

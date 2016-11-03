@@ -3,15 +3,14 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:cxf="http://camel.apache.org/schema/cxf"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://camel.apache.org/schema/cxf
-       http://camel.apache.org/schema/cxf/camel-cxf-spring.xsd
-       http://camel.apache.org/schema/spring
-       http://camel.apache.org/schema/spring/camel-spring.xsd">
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf-spring.xsd
+           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
     
     <!-- CXF Endpoints -->
-    <cxf:cxfEndpoint id="customerWebService" address="/ws/customerService/" serviceClass="com.redhat.fuse.demo.service.ws.CustomerWS" loggingFeatureEnabled="true">
+    <!-- http://0.0.0.0:9090/ -->
+    <cxf:cxfEndpoint id="customerWebService" address="/customerService/" 
+    	serviceClass="com.redhat.fuse.demo.service.ws.CustomerWS" loggingFeatureEnabled="true">
     </cxf:cxfEndpoint>
     
     <!-- CXF Beans -->

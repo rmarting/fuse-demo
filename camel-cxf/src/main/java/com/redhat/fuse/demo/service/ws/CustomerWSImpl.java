@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.redhat.fuse.demo.model.Account;
 import com.redhat.fuse.demo.model.CorporateAccount;
 
-@WebService(endpointInterface = "org.fuse.usecase.service.CustomerWS")
+@WebService(endpointInterface = "com.redhat.fuse.demo.service.ws.CustomerWS")
 public class CustomerWSImpl implements CustomerWS {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerWSImpl.class);
