@@ -11,11 +11,11 @@
 
     <properties>
         <!-- Version of JBoss Fuse used for the use case -->
-        <jboss.fuse.bom.version>6.2.1.redhat-084</jboss.fuse.bom.version>
+        <jboss.fuse.bom.version>6.3.0.redhat-187</jboss.fuse.bom.version>
 
         <!-- Versions should be the same as defined within the Fuse BOM -->
-        <camel.version>2.15.1.redhat-621084</camel.version>
-        <cxf.version>2.15.1.redhat-621084</cxf.version>
+        <camel.version>2.17.0.redhat-630187</camel.version>
+        <cxf.version>3.1.5.redhat-630187</cxf.version>
 
         <!-- Apache Maven plugins -->
         <build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
@@ -24,7 +24,7 @@
         <maven-surefire.version>2.19.1</maven-surefire.version>
         <maven-install-plugin.version>2.3.1</maven-install-plugin.version>
         <felix-maven-plugin.version>2.3.7</felix-maven-plugin.version>
-        <fabric8-plugin.version>1.2.0.redhat-621084</fabric8-plugin.version>
+        <fabric8-plugin.version>1.2.0.redhat-630187</fabric8-plugin.version>
 
         <!-- OSGI Properties required for the Apache Felix Plugin -->
         <osgi-import-package>*</osgi-import-package>
@@ -43,13 +43,6 @@
                 <groupId>org.jboss.fuse.bom</groupId>
                 <artifactId>jboss-fuse-parent</artifactId>
                 <version>${jboss.fuse.bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-parent</artifactId>
-                <version>${camel.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -158,7 +151,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${felix-maven-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
