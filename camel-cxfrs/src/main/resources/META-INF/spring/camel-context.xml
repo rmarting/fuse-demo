@@ -11,11 +11,11 @@
        http://camel.apache.org/schema/spring/camel-spring.xsd">
 
     <!-- JSON Providers -->
-<!--     <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/> -->
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
     
     <!-- CXF Endpoints -->
-    <cxf:rsServer id="customerRestService" address="/rs" 
+    <!-- http://0.0.0.0:9191 -->
+    <cxf:rsServer id="customerRestService" address="http://0.0.0.0:9191/rs" 
     	serviceClass="com.redhat.fuse.demo.service.rs.CustomerRest"
     	loggingFeatureEnabled="true">
 	    <cxf:providers>
@@ -33,7 +33,22 @@
 		<!-- Exposing REST Service -->
 		<route id="rs">
 			<from uri="cxfrs:bean:customerRestService" />
-			<bean ref="customerRSImpl" method="enrich"/>
+			<transform>
+                <simple>${in.body[0]}</simple>
+            </transform>
+            <choice>
+                <when>
+                    <simple>${header.operationName} == 'enrich'</simple>
+                    <bean ref="customerRSImpl" method="enrich"/>
+                </when>
+                <when>
+                    <simple>${header.operationName} == 'show'</simple>
+                    <bean ref="customerRSImpl" method="show"/>
+                </when>
+                <otherwise>
+                    <to uri="direct:not-valid" />
+                </otherwise>
+            </choice>
 			<log message="Response generated in CXF-RS:\n${body}"/>
 			<to uri="log:output" />
 		</route>		

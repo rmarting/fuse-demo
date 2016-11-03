@@ -12,10 +12,6 @@ Aggregate the responses received and take care about the transformation XML/JSon
 * Save the message aggregated into a SQL database using the Spring SQL component
 
 === Service EndPoints
-
-		SOAP Web Service: http://localhost:9090/ws/customerService/?wsdl
-
-There is a SoapUI project in `src/test/resources/soapui/` to test this Web Service EndPoint.
 		
 		REST Service: (POST) http://localhost:9191/rs/customerservice/enrich
 
@@ -29,9 +25,22 @@ curl \
     http://localhost:9191/rs/customerservice/enrich
     
 Fabric    
-curl     -H "Accept: application/json"     -H "Content-Type: application/json"     -X POST -d '{"company":{"name":"MicroservicesVision","geo":"SA","active":true},"contact":{"firstName":"Fred","lastName":"Quicksand","streetAddr":"202 Barney Blvd.","city":"Rock City","state":"SA","zip":"19728","phone":"100-400-2000"},"clientId":0,"salesRepresentative":null}'     http://rhel7jboss02:8184/cxf/rs/customerservice/enrich
+curl -H "Accept: application/json" \
+     -H "Content-Type: application/json" \
+     -X POST -d '{"company":{"name":"MicroservicesVision","geo":"SA","active":true},"contact":{"firstName":"Fred","lastName":"Quicksand","streetAddr":"202 Barney Blvd.","city":"Rock City","state":"SA","zip":"19728","phone":"100-400-2000"},"clientId":0,"salesRepresentative":null}' \
+     http://rhel7jboss02:8182/cxf/rs/customerservice/enrich
+     
 {"company":{"name":"MicroservicesVision","geo":"SOUTH_AMERICA","active":true},"contact":{"firstName":"Fred","lastName":"Quicksand","streetAddr":"202 Barney Blvd.","city":"Rock City","state":[rmarting@rhel7 ~] 
 
+// Fixed in some cases
+
+curl -H "Accept: application/json" \
+    -H "Content-Type: application/json" \
+    -X POST -d '{"company":{"name":"MicroservicesVision","geo":"WA","active":true},"contact":{"firstName":"Fred","lastName":"Quicksand","streetAddr":"202 Barney Blvd.","city":"Rock City","state":"MI","zip":"19728","phone":"100-400-2000"},"clientId":0,"salesRepresentative":null}' \
+    http://rhel7jboss02:9000/servlets/org.apache.cxf.cxf-rt-transports-http/cxf/rs/customerservice/enrich
+    
+    
+{"company":{"name":"MicroservicesVision","geo":"SOUTH_AMERICA","active":true},"contact":{"firstName":"Fred","lastName":"Quicksand","streetAddr":"202 Barney Blvd.","city":"Rock City","state":"SA","zip":"19728","phone":"100-400-2000"},"clientId":0,"salesRepresentative":null}
     
 
 === Other Resources

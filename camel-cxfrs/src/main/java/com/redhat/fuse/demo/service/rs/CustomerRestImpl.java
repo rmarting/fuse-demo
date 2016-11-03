@@ -31,4 +31,10 @@ public class CustomerRestImpl implements CustomerRest {
 
 		return account;
 	}
+
+	@Override
+	public String show(String message, String message2) {
+		return "[RESPONSE] message=" + message + "-message2=" + message2;
+	}
+	
 }
