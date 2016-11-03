@@ -30,11 +30,13 @@
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
     
     <!-- CXF Endpoints -->
-    <cxf:cxfEndpoint id="customerWebService" address="http://rhel7jboss02:8182/cxf/ws/customerService/" serviceClass="com.redhat.fuse.demo.service.ws.CustomerWS" loggingFeatureEnabled="true">
+    <!-- /servlets/org.apache.cxf.cxf-rt-transports-http/cxf/  -->
+    <cxf:cxfEndpoint id="customerWebService" address="http://rhel7jboss02:8181/cxf/customerService/" serviceClass="com.redhat.fuse.demo.service.ws.CustomerWS" loggingFeatureEnabled="true">
     </cxf:cxfEndpoint>
     
     <!-- CXF Clients -->
-    <cxf:rsClient id="customerRestServiceClient" address="http://rhel7jboss02:8184/cxf/rs" serviceClass="com.redhat.fuse.demo.service.rs.CustomerRest"
+    <!-- /servlets/org.apache.cxf.cxf-rt-transports-http/cxf/ -->
+    <cxf:rsClient id="customerRestServiceClient" address="http://rhel7jboss02:8182/cxf/rs" serviceClass="com.redhat.fuse.demo.service.rs.CustomerRest"
         loggingFeatureEnabled="true" skipFaultLogging="true">
     		<cxf:headers>    		  
             	<entry key="Accept" value="application/json" />
@@ -50,7 +52,7 @@
 
 	<!-- AMQ -->
 	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-		<property name="brokerURL" value="discovery:(fabric:demo)" /> <!-- discovery:(fabric:demo) --><!-- vm://localhost -->
+		<property name="brokerURL" value="discovery:(fabric:demo-one)" /><!-- vm://localhost -->
 		<property name="userName" value="admin" />
 		<property name="password" value="admin" />
 	</bean>
