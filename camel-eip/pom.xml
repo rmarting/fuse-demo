@@ -7,27 +7,14 @@
 	<parent>
 		<groupId>com.redhat.fuse.demo</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.1.0-SNAPSHOT</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
 	<artifactId>camel-eip</artifactId>
-	<version>1.0.16</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	<name>Fuse :: Demo :: EIP Routing</name>
-
-	<distributionManagement>
-		<repository>
-			<id>nexus</id>
-			<name>Local Internal Releases</name>
-			<url>http://localhost:8081/nexus/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>nexus</id>
-			<name>Local Internal Snapshots</name>
-			<url>http://localhost:8081/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<properties>
 		<fabric8.profile>${project.groupId}.${project.artifactId}</fabric8.profile>
@@ -49,9 +36,7 @@
 		<osgi-export-package>
 			org.acme.*,
 			org.globex.*,
-			org.codehaus.jackson.jaxrs,
-			org.codehaus.jackson.xc.*,
-			org.jboss.tools.fuse.transformation.editor.transformations,
+			com.redhat.fuse.demo.service.ws.*
 		</osgi-export-package>
 		<osgi-import-package>
 			org.apache.camel;version="[2.0,3.0)",
@@ -59,8 +44,6 @@
 			org.apache.camel.model;version="[2.0,3.0)",
 			org.apache.camel.impl;version="[2.0,3.0)",
 			org.apache.camel.spi;version="[2.0,3.0)",
-			org.apache.camel.component.dozer;version="[2.0,3.0)",
-			io.fabric8.cxf,
 			org.apache.el,
 			*
 		</osgi-import-package>
@@ -94,7 +77,18 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-netty-http</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-sql</artifactId>
+		</dependency>
+
+		<!-- Client WS -->		
+		<dependency>
+			<groupId>com.redhat.fuse.demo</groupId>
+			<artifactId>client-ws</artifactId>
+			<version>1.1.0-SNAPSHOT</version>
 		</dependency>
 		
 		<!-- Load Balancing Cluster -->
@@ -122,30 +116,25 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
-			<version>2.4.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.camel</groupId>
-			<artifactId>camel-sql</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-jaxrs</artifactId>
-			<version>1.9.12</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
-			<version>1.9.12</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.fasterxml.jackson.core</groupId> -->
+<!-- 			<artifactId>jackson-databind</artifactId> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.codehaus.jackson</groupId> -->
+<!-- 			<artifactId>jackson-jaxrs</artifactId> -->
+<!-- 			<version>1.9.12</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.codehaus.jackson</groupId> -->
+<!-- 			<artifactId>jackson-core-asl</artifactId> -->
+<!-- 			<version>1.9.12</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -166,18 +155,15 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-camel</artifactId>
-			<version>5.11.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-pool</artifactId>
-			<version>5.11.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-kahadb-store</artifactId>
-			<version>5.11.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -189,11 +175,6 @@
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-test-spring3</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.camel</groupId>
-			<artifactId>camel-netty-http</artifactId>
-			<version>2.15.1.redhat-621084</version>
 		</dependency>
 	</dependencies>
 
@@ -296,7 +277,7 @@
 			<plugin>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-java2ws-plugin</artifactId>
-				<version>3.1.5.redhat-630187</version>
+				<version>${cxf.version}</version>
 				<executions>
 					<execution>
 						<id>process-classes</id>
@@ -305,6 +286,7 @@
 							<goal>java2ws</goal>
 						</goals>
 						<configuration>
+							<skip>true</skip>
 							<className>com.redhat.fuse.demo.service.ws.CustomerWS</className>
 							<genWsdl>true</genWsdl>
 							<verbose>true</verbose>

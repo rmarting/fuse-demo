@@ -5,26 +5,30 @@
 
     <groupId>com.redhat.fuse.demo</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>Fuse :: Demo :: Parent</name>
     <packaging>pom</packaging>
 
     <properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<jdk.target>1.8</jdk.target>
+
         <!-- Version of JBoss Fuse used for the use case -->
-        <jboss.fuse.bom.version>6.3.0.redhat-187</jboss.fuse.bom.version>
+        <jboss.fuse.bom.version>6.3.0.redhat-254</jboss.fuse.bom.version>
 
         <!-- Versions should be the same as defined within the Fuse BOM -->
-        <camel.version>2.17.0.redhat-630187</camel.version>
-        <cxf.version>3.1.5.redhat-630187</cxf.version>
+        <camel.version>2.17.0.redhat-630254</camel.version>
+        <cxf.version>3.1.5.redhat-630254</cxf.version>
 
         <!-- Apache Maven plugins -->
-        <build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
-        <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
-        <maven-resources-plugin.version>2.5</maven-resources-plugin.version>
-        <maven-surefire.version>2.19.1</maven-surefire.version>
+        <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
+        <maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
+        <maven.plugin.resources>3.0.1</maven.plugin.resources>
+        <maven-surefire.version>2.20</maven-surefire.version>
         <maven-install-plugin.version>2.3.1</maven-install-plugin.version>
-        <felix-maven-plugin.version>2.3.7</felix-maven-plugin.version>
-        <fabric8-plugin.version>1.2.0.redhat-630187</fabric8-plugin.version>
+        <felix-maven-plugin.version>3.2.0</felix-maven-plugin.version>
+        <fabric8-plugin.version>1.2.0.redhat-630254</fabric8-plugin.version>
 
         <!-- OSGI Properties required for the Apache Felix Plugin -->
         <osgi-import-package>*</osgi-import-package>
@@ -36,6 +40,19 @@
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
 		<timestamp>${maven.build.timestamp}</timestamp>        
     </properties>
+
+	<distributionManagement>
+		<repository>
+			<id>nexus</id>
+			<name>Internal Releases</name>
+			<url>http://nexus:8081/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus</id>
+			<name>Internal Releases</name>
+			<url>http://nexus:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -59,22 +76,7 @@
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-spring</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-cxf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-dozer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jackson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-sql</artifactId>
-        </dependency>
+
         <!-- logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -129,7 +131,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>${maven-resources-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -143,11 +144,18 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
+				<configuration>
+					<source>${jdk.target}</source>
+					<target>${jdk.target}</target>
+				</configuration>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -167,58 +175,4 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>fusesource-public-repository</id>
-            <name>FuseSource Release Repository</name>
-            <url>http://repository.jboss.org/nexus/content/repositories/fs-public/</url>
-        </repository>
-        <repository>
-            <id>jboss-public-repository</id>
-            <name>JBoss.org Public Maven Repository Group</name>
-            <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
-        </repository>
-        <repository>
-            <id>jboss-fuse-ea</id>
-            <url>http://repository.jboss.org/nexus/content/groups/ea</url>
-        </repository>
-        <repository>
-            <id>jboss-releases</id>
-            <name>JBoss.org Fuse Releases</name>
-            <url>http://repository.jboss.org/nexus/content/repositories/fs-releases/</url>
-        </repository>
-        <repository>
-            <id>Maven Central</id>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
-        <repository>
-            <id>Tech Preview</id>
-            <url>http://maven.repository.redhat.com/techpreview/all</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>fusesource-public-repository</id>
-            <name>FuseSource Release Repository</name>
-            <url>http://repository.jboss.org/nexus/content/repositories/fs-public/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>jboss-public-repository-group</id>
-            <name>JBoss.org Public Maven Repository Group</name>
-            <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>jboss-fuse-releases</id>
-            <name>JBoss.org Fuse Releases</name>
-            <url>http://repository.jboss.org/nexus/content/repositories/fs-releases</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>jboss-fuse-ea</id>
-            <url>http://repository.jboss.org/nexus/content/groups/ea</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>Tech Preview</id>
-            <url>http://maven.repository.redhat.com/techpreview/all</url>
-        </pluginRepository>
-    </pluginRepositories>
 </project>
