@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="${project.groupId}" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+    <feature name="${project.artifactId}" version="${project.version}">
+        <!-- ActiveMQ Features -->
+        <feature>activemq-client</feature>
+        
+        <!-- Apache Camel Features -->
+        <feature>camel-jackson</feature>
+		<feature>camel-dozer</feature>
+		
+        <!-- Fuse Demo Bundles -->
+        <!-- 
+        <bundle>mvn:${project.groupId}/camel-eip/${project.version}</bundle>
+        <bundle>mvn:${project.groupId}/camel-eip/${project.version}</bundle>
+        -->
+        <bundle>mvn:${project.groupId}/camel-eip/${project.version}</bundle>
+    </feature>
+</features>
