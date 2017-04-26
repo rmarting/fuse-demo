@@ -1,6 +1,8 @@
 package com.redhat.fuse.demo.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(namespace = "model.demo.fuse.redhat.com")
 public class Account {
 
     private Company company;

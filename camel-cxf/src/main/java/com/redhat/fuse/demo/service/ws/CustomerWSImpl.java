@@ -19,7 +19,7 @@ public class CustomerWSImpl implements CustomerWS {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerWSImpl.class);
 
-	List<String> sales;
+	private List<String> sales;
 
 	public CustomerWSImpl() {
 		sales = new ArrayList<String>();
@@ -40,8 +40,7 @@ public class CustomerWSImpl implements CustomerWS {
 		sales.add("Steve Perry");
 	}
 
-	@WebResult(name = "CorporateAccount")
-	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+	@Override
 	public CorporateAccount updateAccount(Account account) {
 		LOGGER.info("Updating Account: {}", account);
 
@@ -57,11 +56,11 @@ public class CustomerWSImpl implements CustomerWS {
 		return ca;
 	}
 
-	public static int genRandom() {
+	private static int genRandom() {
 		return new Random().nextInt(100);
 	}
 
-	public static String getRandomSales(List<String> list) {
+	private static String getRandomSales(List<String> list) {
 		// 0-11
 		int index = new Random().nextInt(list.size());
 		return list.get(index);
