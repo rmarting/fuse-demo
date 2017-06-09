@@ -22,21 +22,16 @@
 <!--     <bean id="sql" class="org.apache.camel.component.sql.SqlComponent"> -->
 <!-- 		 <property name="dataSource" ref="usecaseDB"/> -->
 <!--     </bean> -->
-    
-    <!-- Agregator Strategies -->
-    <bean id="accountAggregator" class="com.redhat.fuse.demo.bean.AccountAggregator"/>
 
     <!-- JSON Providers -->
-    <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+	<bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
     
     <!-- CXF Endpoints -->
-    <!-- /servlets/org.apache.cxf.cxf-rt-transports-http/cxf/  -->
-    <cxf:cxfEndpoint id="customerWebService" address="http://rhel7jboss02:8185/cxf/customerService/" serviceClass="com.redhat.fuse.demo.service.ws.CustomerWS" loggingFeatureEnabled="true">
+    <cxf:cxfEndpoint id="customerWebService" address="http://localhost:9292/customerService/" serviceClass="com.redhat.fuse.demo.service.ws.CustomerWS" loggingFeatureEnabled="true">
     </cxf:cxfEndpoint>
     
     <!-- CXF Clients -->
-    <!-- /servlets/org.apache.cxf.cxf-rt-transports-http/cxf/ -->
-    <cxf:rsClient id="customerRestServiceClient" address="http://rhel7jboss02:8182/cxf/rs" serviceClass="com.redhat.fuse.demo.service.rs.CustomerRest"
+    <cxf:rsClient id="customerRestServiceClient" address="http://localhost:9191/rs" serviceClass="com.redhat.fuse.demo.service.rs.CustomerRest"
         loggingFeatureEnabled="true" skipFaultLogging="true">
     		<cxf:headers>    		  
             	<entry key="Accept" value="application/json" />
@@ -46,25 +41,33 @@
 		       	<ref bean="jsonProvider"/>
 		    </cxf:providers>
     </cxf:rsClient>
-        
-    <!-- Processor Bean -->
-    <bean id="processorBean" class="com.redhat.fuse.demo.bean.ProcessorBean"/>
 
 	<!-- AMQ -->
 	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-		<property name="brokerURL" value="discovery:(fabric:demo-one)" /><!-- vm://localhost -->
+		<property name="brokerURL" value="tcp://localhost:61616" />
 		<property name="userName" value="admin" />
 		<property name="password" value="admin" />
 	</bean>
+
+    <!-- Processor Bean -->
+    <bean id="processorBean" class="com.redhat.fuse.demo.bean.ProcessorBean"/>
+    <!-- Agregator Strategies -->
+    <bean id="accountAggregator" class="com.redhat.fuse.demo.bean.AccountAggregator"/>
     
     <!-- Camel Context -->
-    <camelContext trace="false" xmlns="http://camel.apache.org/schema/spring">
+    <camelContext id="camel-eip-context" trace="false" xmlns="http://camel.apache.org/schema/spring">
         <propertyPlaceholder id="properties" location="fabric8/route.properties"/>
         
         <!-- Use Case 1 -->
 		<endpoint
 			uri="dozer:csv2json?sourceModel=org.acme.Customer&amp;targetModel=org.globex.Account&amp;marshalId=transform-json&amp;mappingFile=transformation.xml"
 			id="csv2json" />
+		<endpoint
+			uri="dozer:globexAccount2wsAccount?sourceModel=org.globex.Account&amp;targetModel=com.redhat.fuse.demo.service.ws.Account&amp;mappingFile=transformation-account.xml"
+			id="globexAccount2wsAccount" />
+		<endpoint
+			uri="dozer:wsCA2globexCA?sourceModel=com.redhat.fuse.demo.service.ws.CorporateAccount&amp;targetModel=org.globex.CorporateAccount&amp;mappingFile=transformation-corporateaccount.xml"
+			id="wsCA2globexCA" />
 		
 		<dataFormats>
 			<bindy type="Csv" classType="org.acme.Customer" id="bindyDataformat" />
@@ -187,17 +190,14 @@
 					<constant>true</constant>
 				</handled>
 				<log message="Error in callWS service.\nMessage: ${exception.message}\nStack Trace:\n${exception.stacktrace}" />
-			</onException>		    
-		    
+			</onException>
+			
+			<to ref="globexAccount2wsAccount" />
+
 		    <inOut uri="cxf:bean:customerWebService" />
 		    
-		    <!-- Procesing Response -->
-		    <!-- 
-   		    <bean ref="processorBean" method="manageSOAPResponse"/>
-		    -->
-		    <transform>
-                <simple>${in.body[0]}</simple>
-            </transform>
+		    <to ref="wsCA2globexCA" />
+		    
 		    <log message="Response from customerWebService:\n${body}"/>    
 		</route>
 		

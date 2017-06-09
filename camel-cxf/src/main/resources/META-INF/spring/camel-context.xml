@@ -8,8 +8,7 @@
            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
     
     <!-- CXF Endpoints -->
-    <!-- http://0.0.0.0:9090/ -->
-    <cxf:cxfEndpoint id="customerWebService" address="/customerService/" 
+    <cxf:cxfEndpoint id="customerWebService" address="http://0.0.0.0:9292/customerService/" 
     	serviceClass="com.redhat.fuse.demo.service.ws.CustomerWS" loggingFeatureEnabled="true">
     </cxf:cxfEndpoint>
     
@@ -17,7 +16,7 @@
     <bean id="customerWSImpl" class="com.redhat.fuse.demo.service.ws.CustomerWSImpl"/>
     
     <!-- Camel Context -->
-    <camelContext trace="false" xmlns="http://camel.apache.org/schema/spring">
+    <camelContext id="camel-cxf-context" trace="false" xmlns="http://camel.apache.org/schema/spring">
         <propertyPlaceholder id="properties" location="fabric8/route.properties"/>
 		
 		<!-- Exposing WS Service -->

@@ -1,10 +1,8 @@
 package com.redhat.fuse.demo.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "CorporateAccount")
+@XmlRootElement(namespace = "model.demo.fuse.redhat.com")
 public class CorporateAccount {
 
     private Company company;

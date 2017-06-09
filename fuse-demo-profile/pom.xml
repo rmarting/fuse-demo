@@ -1,0 +1,84 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.redhat.fuse.demo</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.1.0-SNAPSHOT</version>
+        <relativePath>../parent/pom.xml</relativePath>
+	</parent>
+
+	<groupId>com.redhat.fuse.demo</groupId>
+	<artifactId>fuse-demo-profile</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+  	<packaging>bundle</packaging>
+
+	<properties>
+		<fabric8.parentProfiles>feature-camel</fabric8.parentProfiles>	
+		<fabric8.features>
+            <!-- Apache Camel & Fabric -->
+            camel-spring
+            camel-dozer
+            camel-jackson
+            camel-bindy
+			camel-cxf
+            camel-sql
+            mq-fabric
+            camel-amq
+            fabric-cxf
+            camel-spring
+            
+            <!-- Fuse Demo -->
+            fuse-demo-features-camel
+            fuse-demo-features
+		</fabric8.features>
+		<fabric8.bundles>
+            mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.12
+			mvn:org.codehaus.jackson/jackson-core-asl/1.9.12
+			mvn:org.codehaus.jackson/jackson-xc/1.9.12
+		</fabric8.bundles>
+		<fabric8.featureRepos>
+			mvn:com.redhat.fuse.demo/fuse-demo-features/1.1.0-SNAPSHOT/xml/features
+		</fabric8.featureRepos>
+	</properties>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>fabric8-maven-plugin</artifactId>
+				<version>1.2.0.redhat-630254</version>
+				<executions>
+					<execution>
+						<id>zip</id>
+						<phase>package</phase>
+						<goals>
+							<goal>zip</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<jolokiaUrl>http://localhost:8181/jolokia</jolokiaUrl>
+					<serverId>fabric8.demo.repo</serverId>
+				</configuration>
+			</plugin>
+			
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.name}</Bundle-Name>
+						<Bundle-Version>${project.version}</Bundle-Version>
+                    </instructions>
+                </configuration>
+            </plugin>			
+
+		</plugins>
+
+	</build>
+</project>

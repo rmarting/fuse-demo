@@ -41,7 +41,7 @@ public class Account {
 
 	@Override
 	public String toString() {
-		return "Account [company=" + company + ", contact=" + contact
+		return "org.globex.Account [company=" + company + ", contact=" + contact
 				+ ", clientId=" + clientId + ", salesRepresentative="
 				+ salesRepresentative + "]";
 	}

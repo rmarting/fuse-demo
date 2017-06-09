@@ -28,6 +28,30 @@ curl \
     -X POST -d '{"company":{"name":"MicroservicesVision","geo":"WA","active":true},"contact":{"firstName":"Fred","lastName":"Quicksand","streetAddr":"202 Barney Blvd.","city":"Rock City","state":"MI","zip":"19728","phone":"100-400-2000"},"clientId":0,"salesRepresentative":null}' \
     http://localhost:9191/rs/customerservice/enrich
 
+=== OSGi Install
+
+Copy jar file into $FUSE_HOME/deploy folder and install the next features:
+
+```
+JBossFuse:karaf@root> features:install camel-dozer
+JBossFuse:karaf@root> features:install camel-jackson
+```
+
+Install using a Karaf Feature defined in *fuse-demo-features* module.
+
+```
+JBossFuse:karaf@root> features:refreshurl
+JBossFuse:karaf@root> features:addurl mvn:com.redhat.fuse.demo/fuse-demo-features/1.1.0-SNAPSHOT/xml/features
+JBossFuse:karaf@root> features:install com.redhat.fuse.demo.fuse-demo-features
+```
+
+Uninstall using Karaf Features:
+
+```
+JBossFuse:karaf@root> features:uninstall com.redhat.fuse.demo.fuse-demo-features
+JBossFuse:karaf@root> features:removeurl mvn:com.redhat.fuse.demo/fuse-demo-features/1.1.0-SNAPSHOT/xml/features
+```
+
 === Other Resources
 Related Links about the topics included in this Use Case:
 

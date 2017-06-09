@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="${project.groupId}" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+	<feature name="${project.artifactId}" version="${project.version}">
+		<!-- ActiveMQ Features -->
+		<feature>activemq-client</feature>
+
+		<!-- Apache Camel Features -->
+		<feature>camel-jackson</feature>
+		<feature>camel-dozer</feature>
+
+		<bundle>mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.12</bundle>
+		<bundle>mvn:org.codehaus.jackson/jackson-core-asl/1.9.12</bundle>
+		<bundle>mvn:org.codehaus.jackson/jackson-xc/1.9.12</bundle>
+
+		<!-- Fuse Demo Bundles -->
+		<bundle start-level="90">mvn:${project.groupId}/camel-cxf/${project.version}</bundle>
+		<bundle start-level="90">mvn:${project.groupId}/camel-cxfrs/${project.version}</bundle>
+		<bundle start-level="100">mvn:${project.groupId}/camel-eip/${project.version}</bundle>
+	</feature>
+	<feature name="fuse-demo-features-camel" version="1.0">
+		<feature>camel-quartz2</feature>
+		<feature>camel-spring</feature>
+		<feature>camel-dozer</feature>
+		<feature>camel-jackson</feature>
+		<feature>camel-bindy</feature>
+		<feature>camel-cxf</feature>
+		<feature>camel-sql</feature>
+		<feature>camel-amq</feature>
+		<feature>camel-spring</feature>
+	</feature>
+</features>

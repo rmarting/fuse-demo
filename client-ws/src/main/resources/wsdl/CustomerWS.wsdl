@@ -1,19 +1,24 @@
 <?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.service.demo.fuse.redhat.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" name="CustomerWSService" targetNamespace="http://ws.service.demo.fuse.redhat.com/">
   <wsdl:types>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://ws.service.demo.fuse.redhat.com/" elementFormDefault="unqualified" targetNamespace="http://ws.service.demo.fuse.redhat.com/" version="1.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://ws.service.demo.fuse.redhat.com/" targetNamespace="model.demo.fuse.redhat.com" version="1.0">
 
-  <xs:element name="CorporateAccount" type="tns:corporateAccount"/>
+  <xs:import namespace="http://ws.service.demo.fuse.redhat.com/"/>
 
-  <xs:element name="updateAccount" type="tns:updateAccount"/>
+  <xs:element name="account" type="ns1:account"/>
 
-  <xs:element name="updateAccountResponse" type="tns:updateAccountResponse"/>
+  <xs:element name="company" type="ns1:company"/>
 
-  <xs:complexType name="updateAccount">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="arg0" type="tns:account"/>
-    </xs:sequence>
-  </xs:complexType>
+  <xs:element name="contact" type="ns1:contact"/>
 
+  <xs:element name="corporateAccount" type="ns1:corporateAccount"/>
+
+
+
+
+
+</xs:schema>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://ws.service.demo.fuse.redhat.com/" xmlns:ns1="model.demo.fuse.redhat.com" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://ws.service.demo.fuse.redhat.com/">
+  <xs:import namespace="model.demo.fuse.redhat.com"/>
   <xs:complexType name="account">
     <xs:sequence>
       <xs:element name="clientId" type="xs:int"/>
@@ -22,7 +27,6 @@
       <xs:element minOccurs="0" name="salesRepresentative" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
-
   <xs:complexType name="company">
     <xs:sequence>
       <xs:element name="active" type="xs:boolean"/>
@@ -30,7 +34,6 @@
       <xs:element minOccurs="0" name="name" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
-
   <xs:complexType name="contact">
     <xs:sequence>
       <xs:element minOccurs="0" name="city" type="xs:string"/>
@@ -42,13 +45,6 @@
       <xs:element minOccurs="0" name="zip" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
-
-  <xs:complexType name="updateAccountResponse">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="return" type="tns:corporateAccount"/>
-    </xs:sequence>
-  </xs:complexType>
-
   <xs:complexType name="corporateAccount">
     <xs:sequence>
       <xs:element minOccurs="0" name="company" type="tns:company"/>
@@ -57,15 +53,16 @@
       <xs:element minOccurs="0" name="salesContact" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
-
+  <xs:element name="updateAccount" nillable="true" type="tns:account"/>
+  <xs:element name="updateAccountResponse" nillable="true" type="tns:corporateAccount"/>
 </xs:schema>
   </wsdl:types>
-  <wsdl:message name="updateAccountResponse">
-    <wsdl:part element="tns:updateAccountResponse" name="parameters">
+  <wsdl:message name="updateAccount">
+    <wsdl:part element="tns:updateAccount" name="updateAccount">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="updateAccount">
-    <wsdl:part element="tns:updateAccount" name="parameters">
+  <wsdl:message name="updateAccountResponse">
+    <wsdl:part element="tns:updateAccountResponse" name="updateAccountResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:portType name="CustomerWS">
@@ -90,7 +87,7 @@
   </wsdl:binding>
   <wsdl:service name="CustomerWSService">
     <wsdl:port binding="tns:CustomerWSServiceSoapBinding" name="CustomerWSPort">
-      <soap:address location="http://rhel7jboss02:8185/cxf/customerService/CustomerWS"/>
+      <soap:address location="http://localhost:9292/customerService/CustomerWS"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
